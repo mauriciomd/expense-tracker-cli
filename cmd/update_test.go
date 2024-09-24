@@ -4,14 +4,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mauriciomd/expense-tracker/persistence"
 	"github.com/mauriciomd/expense-tracker/types"
 )
 
 func TestUpdateExpense(t *testing.T) {
 	id := uint(2)
 
-	mock := &MockPersistence{
-		data: []*types.Expense{
+	mock := &persistence.MockPersistence{
+		Data: []*types.Expense{
 			{Id: id, Description: "valid description", Amount: 10, Category: "education", Date: time.Now()},
 		},
 	}
@@ -22,7 +23,7 @@ func TestUpdateExpense(t *testing.T) {
 		category := ""
 		amount := 10.0
 		want := ErrInvalidId
-		_, got := updateExpense(id, description, category, amount, &MockPersistence{})
+		_, got := updateExpense(id, description, category, amount, &persistence.MockPersistence{})
 
 		if got != want {
 			t.Fatalf("got %q want %q", got.Error(), want.Error())
@@ -30,8 +31,8 @@ func TestUpdateExpense(t *testing.T) {
 	})
 
 	t.Run("expense not found", func(t *testing.T) {
-		mock := &MockPersistence{
-			data: []*types.Expense{
+		mock := &persistence.MockPersistence{
+			Data: []*types.Expense{
 				{Id: 2, Description: "valid description", Amount: 10, Date: time.Now()},
 			},
 		}
@@ -82,7 +83,7 @@ func TestUpdateExpense(t *testing.T) {
 		_, err := updateExpense(id, description, category, amount, mock)
 		assertErrorIsNil(t, err)
 
-		data := mock.data[0]
+		data := mock.Data[0]
 		assertAny(t, data.Description, description)
 		assertAny(t, data.Category, category)
 		assertAny(t, data.Amount, amount)

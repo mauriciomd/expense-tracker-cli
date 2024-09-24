@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mauriciomd/expense-tracker/persistence"
 	"github.com/mauriciomd/expense-tracker/types"
 )
 
@@ -20,7 +21,7 @@ func TestSummary(t *testing.T) {
 		}
 
 		for _, test := range cases {
-			_, got := summary(test.month, &MockPersistence{})
+			_, got := summary(test.month, &persistence.MockPersistence{})
 
 			if got != test.want {
 				t.Fatalf("got %q want %q", got, test.want)
@@ -31,8 +32,8 @@ func TestSummary(t *testing.T) {
 	t.Run("all expenses of current year", func(t *testing.T) {
 		lastYear := time.Date(time.Now().Year()-1, 1, 1, 0, 0, 0, 0, time.Local)
 
-		mock := &MockPersistence{
-			data: []*types.Expense{
+		mock := &persistence.MockPersistence{
+			Data: []*types.Expense{
 				{Id: 1, Description: "breakfast", Amount: 10, Date: time.Now()},
 				{Id: 2, Description: "lunch", Amount: 30, Date: lastYear},
 				{Id: 3, Description: "dinner", Amount: 20, Date: time.Now()},
@@ -53,8 +54,8 @@ func TestSummary(t *testing.T) {
 		now := time.Date(time.Now().Year(), time.Month(month), 1, 0, 0, 0, 0, time.Local)
 		lastMonth := time.Date(time.Now().Year(), time.Month(month-1), 1, 0, 0, 0, 0, time.Local)
 
-		mock := &MockPersistence{
-			data: []*types.Expense{
+		mock := &persistence.MockPersistence{
+			Data: []*types.Expense{
 				{Id: 1, Description: "breakfast", Amount: 20, Date: now},
 				{Id: 3, Description: "dinner", Amount: 45, Date: now},
 				{Id: 2, Description: "lunch", Amount: 50, Date: lastMonth},

@@ -1,4 +1,4 @@
-package cmd
+package persistence
 
 import (
 	"github.com/mauriciomd/expense-tracker/types"
@@ -6,16 +6,16 @@ import (
 )
 
 type MockPersistence struct {
-	data []*types.Expense
+	Data []*types.Expense
 }
 
 func (mp *MockPersistence) Add(e *types.Expense) error {
-	mp.data = append(mp.data, e)
+	mp.Data = append(mp.Data, e)
 	return nil
 }
 
 func (mp *MockPersistence) Delete(e *types.Expense) error {
-	mp.data = utils.Filter(mp.data, func(expense *types.Expense) bool {
+	mp.Data = utils.Filter(mp.Data, func(expense *types.Expense) bool {
 		return e.Id != expense.Id
 	})
 
@@ -23,7 +23,7 @@ func (mp *MockPersistence) Delete(e *types.Expense) error {
 }
 
 func (mp *MockPersistence) ReadAll() ([]*types.Expense, error) {
-	return mp.data, nil
+	return mp.Data, nil
 }
 
 func (mp *MockPersistence) Update(e *types.Expense) error {

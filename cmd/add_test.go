@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/mauriciomd/expense-tracker/persistence"
 	"github.com/mauriciomd/expense-tracker/types"
 )
 
@@ -14,7 +15,7 @@ func TestAddExpense(t *testing.T) {
 		amount := 10.3
 		category := "valid category"
 
-		_, got := addExpense(description, category, amount, &MockPersistence{})
+		_, got := addExpense(description, category, amount, &persistence.MockPersistence{})
 		assertError(t, got, ErrInvalidDescription)
 	})
 
@@ -23,7 +24,7 @@ func TestAddExpense(t *testing.T) {
 		amount := -10.0
 		category := "valid category"
 
-		_, got := addExpense(description, category, amount, &MockPersistence{})
+		_, got := addExpense(description, category, amount, &persistence.MockPersistence{})
 		assertError(t, got, ErrInvalidAmount)
 	})
 
@@ -38,7 +39,7 @@ func TestAddExpense(t *testing.T) {
 		}
 
 		for _, test := range cases {
-			got, err := addExpense(test.description, test.category, test.amount, &MockPersistence{})
+			got, err := addExpense(test.description, test.category, test.amount, &persistence.MockPersistence{})
 
 			assertErrorIsNil(t, err)
 			assertAny(t, got.Category, defaultCategory)
@@ -55,7 +56,7 @@ func TestAddExpense(t *testing.T) {
 		}
 
 		for _, test := range cases {
-			got, err := addExpense(test.description, test.category, test.amount, &MockPersistence{})
+			got, err := addExpense(test.description, test.category, test.amount, &persistence.MockPersistence{})
 
 			assertErrorIsNil(t, err)
 			assertAny(t, got.Category, test.category)
@@ -71,7 +72,7 @@ func TestAddExpense(t *testing.T) {
 			Date:        time.Now().Local(),
 		}
 
-		mp := &MockPersistence{}
+		mp := &persistence.MockPersistence{}
 
 		got, err := addExpense(
 			want.Description,
@@ -86,7 +87,7 @@ func TestAddExpense(t *testing.T) {
 		assertAny(t, got.Amount, want.Amount)
 		assertDate(t, got.Date, want.Date)
 
-		if len(mp.data) == 0 {
+		if len(mp.Data) == 0 {
 			t.Fatal("data hasn't been persisted")
 		}
 	})
@@ -95,14 +96,14 @@ func TestAddExpense(t *testing.T) {
 func TestGetNextId(t *testing.T) {
 	t.Run("First expense", func(t *testing.T) {
 		want := uint(1)
-		got, err := getNextId(&MockPersistence{})
+		got, err := getNextId(&persistence.MockPersistence{})
 		assertErrorIsNil(t, err)
 		assertId(t, got, want)
 	})
 
 	t.Run("Next sequential id", func(t *testing.T) {
-		mock := &MockPersistence{
-			data: []*types.Expense{{Id: 10}},
+		mock := &persistence.MockPersistence{
+			Data: []*types.Expense{{Id: 10}},
 		}
 		want := 11
 		got, err := getNextId(mock)
